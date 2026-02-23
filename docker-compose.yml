@@ -1,9 +1,11 @@
 services:
   easycloc:
-    build: ./
+    build: .
     container_name: easycloc
     volumes:
       - ./:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules 
     depends_on:
       - easycloc_db
     networks:
@@ -35,6 +37,7 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - easycloc-net
+    command: --default-authentication-plugin=mysql_native_password
 
 networks:
   easycloc-net:
