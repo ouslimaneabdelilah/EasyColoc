@@ -1,0 +1,44 @@
+services:
+  easycloc:
+    build: ./
+    container_name: easycloc
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - easycloc_db
+    networks:
+      - easycloc-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: easycloc_nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - easycloc
+    networks:
+      - easycloc-net
+
+  easycloc_db:
+    image: mysql:8.0
+    container_name: easycloc_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: easycloc_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: easycloc
+      MYSQL_PASSWORD: easycloc
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - easycloc-net
+
+networks:
+  easycloc-net:
+    driver: bridge
+
+volumes:
+  db_data:
