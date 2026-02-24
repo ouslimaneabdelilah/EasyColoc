@@ -12,5 +12,15 @@ class Category extends Model
 {
     use HasUuids, HasFactory;
 
+    protected $fillable = ['name', 'colocation_id'];
 
+    public function colocation(): BelongsTo
+    {
+        return $this->belongsTo(Colocation::class);
+    }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
+    }
 }

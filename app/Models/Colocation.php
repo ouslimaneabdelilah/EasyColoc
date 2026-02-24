@@ -14,5 +14,24 @@ class Colocation extends Model
 {
     use HasUuids, SoftDeletes, HasFactory;
 
-    
+    protected $fillable = ['name', 'status'];
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'memberships')
+            ->withPivot(['role', 'left_at'])
+            ->withTimestamps();
+    }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function expenses(): HasManyThrough
+    {
+        return $this->hasManyThrough(Expense::class, Category::class);
+    }
+
+
 }

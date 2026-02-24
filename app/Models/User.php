@@ -8,7 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -72,5 +73,30 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-  
+    public function colocations(): BelongsToMany
+    {
+        return $this->belongsToMany(Colocation::class, 'memberships')
+            ->withPivot(['role', 'left_at'])
+            ->withTimestamps();
+    }
+
+    public function expensesCreated(): HasMany
+    {
+        return $this->hasMany(Expense::class, 'user_id');
+    }
+
+    public function expensesPaid(): HasMany
+    {
+        return $this->hasMany(Expense::class, 'paid_by');
+    }
+
+    public function settlements(): HasMany
+    {
+        return $this->hasMany(Settlement::class);
+    }
+
+    public function activeMemberships(): bool
+    {
+        return $this->colocations()->wherePivotNull('left_at')->exists();
+    }
 }
