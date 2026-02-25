@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Expense;
 use Illuminate\Support\Facades\Auth;
-
 use App\Models\Colocation;
 
 class ExpenseController extends Controller
 {
-        public function index(Request $request, Colocation $colocation)
+    public function index(Request $request, Colocation $colocation)
     {
         $user = Auth::user();
 
@@ -32,17 +31,20 @@ class ExpenseController extends Controller
 
         return view('expenses.index', compact('colocation', 'expenses', 'isOwner'));
     }
-    public function create()
+    public function create(Colocation $colocation)
     {
-       
+        $categories = $colocation->categories;
+        $users = $colocation->users()->wherePivotNull('left_at')->get();
+        return view('expenses.create', compact('colocation', 'categories', 'users'));
     }
 
     public function store(Request $request)
     {
-        
+      
     }
 
     public function show(Expense $expense)
     {
+        
     }
 }
