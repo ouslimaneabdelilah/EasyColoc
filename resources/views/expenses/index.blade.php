@@ -42,7 +42,6 @@
                 <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <h3 class="text-lg font-bold text-gray-900">Recent Expenses</h3>
 
-                    <!-- Month Filter -->
                     <form method="GET" action="{{ route('expenses.index', $colocation) }}" class="flex items-center gap-3">
                         <div class="relative">
                             <input type="month" name="month" value="{{ request('month', date('Y-m')) }}" class="block w-full text-sm border-gray-200 rounded-xl focus:ring-[#4f46e5] focus:border-[#4f46e5] shadow-sm px-4 py-2 bg-white cursor-pointer" onchange="this.form.submit()">
@@ -69,7 +68,6 @@
                     <li class="px-6 py-5 flex flex-col hover:bg-gray-50 rounded-xl transition-colors group gap-4">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
                             <div class="flex items-center gap-4 relative">
-                                <!-- Date Indicator -->
                                 <div class="flex flex-col items-center justify-center bg-white border border-gray-200 shadow-sm rounded-lg w-12 h-12 text-center shrink-0">
                                     <span class="text-[9px] font-bold text-[#4f46e5] uppercase leading-none mb-0.5">{{ \Carbon\Carbon::parse($expense->expense_date)->format('M') }}</span>
                                     <span class="text-[16px] font-extrabold text-gray-900 leading-none">{{ \Carbon\Carbon::parse($expense->expense_date)->format('d') }}</span>
