@@ -70,8 +70,23 @@ class ExpenseController extends Controller
         }
     }
 
-    public function show(Expense $expense)
+    public function show(Colocation $colocation, Expense $expense)
     {
-      
+        $user = Auth::user();
+
+        $userPivot = $colocation->users()->where('user_id', $user->id)->first()?->pivot;
+        if (!$userPivot || $userPivot->left_at !== null) {
+            return redirect()->route('colocations.index')->withErrors(['error' => 'Accès non autorisé.']);
+        }
+
+        if (!$colocation->expenses()->where('expenses.id', $expense->id)->exists()) {
+            return redirect()->route('expenses.index', $colocation)->withErrors(['error' => 'Dépense introuvable dans cette colocation.']);
+        }
+
+        $expense->load(['category', 'payer', 'settlements.user']);
+        $activeCount = $colocation->users()->wherePivotNull('left_at')->count();
+        $isOwner = $userPivot->role === 'owner';
+
+        return view('expenses.show', compact('colocation', 'expense', 'activeCount', 'isOwner'));
     }
 }
