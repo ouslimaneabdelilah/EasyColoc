@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
@@ -18,5 +19,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
- 
+    Route::resource('colocations', ColocationController::class);
+    Route::post('/colocations/{colocation}/cancel', [ColocationController::class, 'cancel'])->name('colocations.cancel');
+    Route::post('/colocations/{colocation}/members/{member}', [ColocationController::class, 'removeMember'])->name('colocations.members.remove');
 });
