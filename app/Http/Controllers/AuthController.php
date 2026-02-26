@@ -22,6 +22,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
+            if (session()->has('pending_invitation_token')) {
+                return redirect()->route('invitations.show', ['token' => session('pending_invitation_token')]);
+            }
+
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.stats');
             }
@@ -53,6 +58,10 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+
+        if (session()->has('pending_invitation_token')) {
+            return redirect()->route('invitations.show', ['token' => session('pending_invitation_token')]);
+        }
 
         if (Auth::user()->role === "admin") {
             return redirect()->route('admin.stats');
