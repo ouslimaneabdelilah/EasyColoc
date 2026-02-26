@@ -33,5 +33,47 @@ class Colocation extends Model
         return $this->hasManyThrough(Expense::class, Category::class);
     }
 
+    public function calculateBalances()
+    {
+        $users = $this->users()->get();
+        $balances = [];
+        foreach ($users as $user) {
+            $balances[$user->id] = 0;
+        }
 
+        $expenses = $this->expenses;
+        $activeUsers = $users->where('pivot.left_at', null);
+        $memberCount = $activeUsers->count();
+
+        if ($memberCount > 0) {
+            foreach ($expenses as $expense) {
+                $share = $expense->amount / $memberCount;
+
+                if (isset($balances[$expense->paid_by])) {
+                    $balances[$expense->paid_by] += $expense->amount;
+                }
+
+                foreach ($activeUsers as $activeUser) {
+                    $balances[$activeUser->id] -= $share;
+                }
+            }
+        }
+
+        $expenseIds = $this->expenses()->pluck('expenses.id');
+        $settlements = Settlement::with('expense')->whereIn('expense_id', $expenseIds)->where('status', 'paid')->get();
+
+        foreach ($settlements as $settlement) {
+            $payer_id = $settlement->user_id; 
+            $payee_id = $settlement->expense->paid_by; 
+
+            if (isset($balances[$payer_id])) {
+                $balances[$payer_id] += $settlement->amount;
+            }
+            if (isset($balances[$payee_id])) {
+                $balances[$payee_id] -= $settlement->amount;
+            }
+        }
+
+        return $balances;
+    }
 }
